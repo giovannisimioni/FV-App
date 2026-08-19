@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>French Verbs</title>
+    <meta
+      name="description"
+      content="French Verbs home screen for practicing French verb tenses."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="French Verbs app">
+      <section id="homeScreen" class="screen active" aria-label="Home screen">
+        <header class="hero">
+          <p class="eyebrow">Practice</p>
+          <h1>French Verbs</h1>
+          <p class="subtitle">Exercise with french verbs</p>
+        </header>
+
+        <section class="selection-panel" aria-label="Exercise configuration">
+          <div class="config-section">
+            <h2 class="config-title">Verbs</h2>
+            <div id="verbGroupsContainer" class="config-group-stack" aria-label="Verb groups"></div>
+          </div>
+
+          <div class="config-section">
+            <h2 class="config-title">Verb tenses</h2>
+            <div id="tenseSelectionContainer" class="button-grid" role="group" aria-label="Verb tenses"></div>
+          </div>
+
+          <div class="config-section">
+            <h2 class="config-title">Number of questions</h2>
+            <div id="questionCountContainer" class="count-grid" role="group" aria-label="Question count"></div>
+          </div>
+
+          <button id="openStudyScreenButton" class="secondary-btn" type="button">
+            Schede di studio
+          </button>
+
+          <button class="start-btn" type="button" id="startExerciseButton" disabled>
+            Start
+          </button>
+        </section>
+      </section>
+
+      <section id="quizScreen" class="screen hidden" aria-label="Exercise screen">
+        <div class="quiz-topbar">
+          <button id="backToHomeButton" class="ghost-btn" type="button" aria-label="Return to home">
+            ← Home
+          </button>
+          <div class="quiz-meta">
+            <span id="questionCounter">1</span> / <span id="questionTotal">20</span>
+          </div>
+          <div class="score-pill">
+            <span id="scorePill">0</span>
+          </div>
+        </div>
+
+        <div class="question-card">
+          <p class="question-label">Translate to French</p>
+          <h2 id="questionPrompt" aria-live="polite">io ...</h2>
+          <p id="questionMeta" class="question-meta">Verb: être • Tense: Présent</p>
+
+          <label for="answerInput" class="sr-only">Your French answer</label>
+          <input
+            id="answerInput"
+            type="text"
+            inputmode="text"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Type your answer"
+          />
+
+          <button id="submitAnswerButton" class="primary-btn" type="button">
+            Submit
+          </button>
+
+          <div id="feedbackRow" class="feedback-row hidden">
+            <div id="feedback" class="feedback" aria-live="polite"></div>
+            <button id="answerPronunciationButton" class="speaker-btn hidden" type="button" aria-label="Replay pronunciation">
+              🔊
+            </button>
+          </div>
+
+          <button id="showConjugationButton" class="secondary-btn hidden" type="button">
+            Vedi coniugazione completa
+          </button>
+
+          <div id="conjugationSheet" class="conjugation-sheet hidden" aria-live="polite"></div>
+
+          <button id="nextQuestionButton" class="secondary-btn hidden" type="button">
+            Next
+          </button>
+        </div>
+      </section>
+
+      <section id="resultsScreen" class="screen hidden" aria-label="Results screen">
+        <header class="hero results-hero">
+          <p class="eyebrow">Summary</p>
+          <h1>Exercise complete</h1>
+        </header>
+
+        <div class="results-card">
+          <div class="results-score-wrap">
+            <p class="results-score"><span id="finalScore">0</span> / <span id="finalTotal">20</span></p>
+            <p class="results-percentage"><span id="finalPercentage">0%</span></p>
+          </div>
+
+          <div class="summary-list">
+            <div class="summary-row">
+              <span>Correct</span>
+              <strong id="correctCount">0</strong>
+            </div>
+            <div class="summary-row">
+              <span>Incorrect</span>
+              <strong id="incorrectCount">0</strong>
+            </div>
+          </div>
+
+          <button id="newExerciseButton" class="start-btn" type="button">
+            Start new exercise
+          </button>
+        </div>
+      </section>
+
+      <section id="studyScreen" class="screen hidden" aria-label="Study cards screen">
+        <div class="quiz-topbar">
+          <button id="studyBackButton" class="ghost-btn" type="button" aria-label="Return to home">
+            ← Home
+          </button>
+          <div class="quiz-meta">
+            <span>Schede di studio</span>
+          </div>
+        </div>
+
+        <div class="study-card">
+          <div class="study-field">
+            <label for="studyVerbSelect" class="study-label">Verb</label>
+            <select id="studyVerbSelect" class="study-select"></select>
+          </div>
+
+          <div class="study-field">
+            <label for="studyTenseSelect" class="study-label">Tense</label>
+            <select id="studyTenseSelect" class="study-select"></select>
+          </div>
+
+          <div id="studyConjugationCard" class="study-conjugation-card" aria-live="polite"></div>
+        </div>
+      </section>
+    </main>
+
+    <script src="script.js"></script>
+  </body>
+</html>
