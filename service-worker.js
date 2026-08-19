@@ -5,7 +5,11 @@ const APP_FILES = [
   "./index.html",
   "./styles.css",
   "./script.js",
-  "./manifest.webmanifest"
+  "./manifest.webmanifest",
+  "./icons/icon-120.png",
+  "./icons/icon-180.png",
+  "./icons/icon-192.png",
+  "./icons/icon-512.png"
 ];
 
 self.addEventListener("install", (event) => {
