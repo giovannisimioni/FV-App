@@ -450,6 +450,15 @@ function getSpeechText(value) {
     .replace(/\s+/g, ' ')
     .replace(/[’‘]/g, "'");
 }
+
+function escapeHtmlAttribute(value) {
+  return String(value || '')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
 function startsWithVowelOrH(str) {
   const firstChar = String(str || '').trim().charAt(0).toLowerCase();
   return /[aeiouhàâäéèêëïîôöùûüœæ]/.test(firstChar);
@@ -532,13 +541,10 @@ function createFrenchSpeechUtterance(answerText) {
   };
 }
 
-function speakCurrentAnswer({ force = false } = {}) {
-  if (!state.currentQuestion) return;
-
-  const fullAnswerText = getSpeechText(state.currentQuestion.fullAnswer);
-  if (!fullAnswerText) return;
-  if (!canUseSpeechSynthesis()) return;
-  if (!force && state.answerSpeechPlayed) return;
+function speakFrenchText(text) {
+  const fullAnswerText = getSpeechText(text);
+  if (!fullAnswerText) return false;
+  if (!canUseSpeechSynthesis()) return false;
 
   const utterance = new window.SpeechSynthesisUtterance(createFrenchSpeechUtterance(fullAnswerText).text);
   utterance.lang = 'fr-FR';
@@ -553,7 +559,20 @@ function speakCurrentAnswer({ force = false } = {}) {
 
   window.speechSynthesis.cancel();
   window.speechSynthesis.speak(utterance);
-  state.answerSpeechPlayed = true;
+  return true;
+}
+
+function speakCurrentAnswer({ force = false } = {}) {
+  if (!state.currentQuestion) return;
+
+  const fullAnswerText = getSpeechText(state.currentQuestion.fullAnswer);
+  if (!fullAnswerText) return;
+  if (!canUseSpeechSynthesis()) return;
+  if (!force && state.answerSpeechPlayed) return;
+
+  if (speakFrenchText(fullAnswerText)) {
+    state.answerSpeechPlayed = true;
+  }
 }
 
 function resetQuizState() {
@@ -836,7 +855,10 @@ function renderStudyScreen() {
     ? studyCard.rows.map((row) => `
       <tr>
         <th>${row.label}</th>
-        <td>${row.value}</td>
+        <td>
+          <span>${row.value}</span>
+          <button class="speaker-btn study-speaker-btn" type="button" aria-label="Pronuncia ${row.label} ${row.value}" data-speech-text="${escapeHtmlAttribute(buildFullFrenchAnswer(row.key, row.value))}">🔊</button>
+        </td>
       </tr>
     `).join('')
     : '<tr><td colspan="2">Coniugazione non disponibile.</td></tr>';
@@ -874,6 +896,7 @@ if (typeof module !== 'undefined') {
     buildFullFrenchAnswer,
     getPreferredFrenchVoice,
     createFrenchSpeechUtterance,
+    speakFrenchText,
     canUseSpeechSynthesis,
     speakCurrentAnswer,
     setQuestionCount,
@@ -917,6 +940,17 @@ if (typeof document !== 'undefined') {
     elements.studyTenseSelect.addEventListener('change', (event) => {
       state.studyTense = event.target.value;
       renderStudyScreen();
+    });
+  }
+
+  if (elements.studyConjugationCard) {
+    elements.studyConjugationCard.addEventListener('click', (event) => {
+      const speakerButton = event.target.closest('.study-speaker-btn');
+      if (!speakerButton) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      speakFrenchText(speakerButton.dataset.speechText);
     });
   }
 

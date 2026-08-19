@@ -596,3 +596,62 @@ test('existing scoring behavior remains correct with validAnswers', () => {
     assert.ok(question.fullAnswer);
   }
 });
+
+test('study-card pronunciation uses complete French expressions with quiz elision', () => {
+  assert.equal(app.buildFullFrenchAnswer('io', 'mangeais'), 'je mangeais');
+  assert.equal(app.buildFullFrenchAnswer('io', 'ai mangé'), "j'ai mangé");
+  assert.equal(app.buildFullFrenchAnswer('tu', 'as mangé'), 'tu as mangé');
+});
+
+test('study-card markup has one speaker button for every conjugation row', () => {
+  const originalDocument = global.document;
+  const { document, elements } = createFakeDocument();
+  global.document = document;
+
+  delete require.cache[require.resolve('../script.js')];
+  require('../script.js');
+
+  assert.equal((elements.studyConjugationCard.innerHTML.match(/study-speaker-btn/g) || []).length, 6);
+
+  global.document = originalDocument;
+});
+
+test('a study-card speaker click speaks only its row using a French voice', () => {
+  const originalDocument = global.document;
+  const originalWindow = global.window;
+  const { document, elements } = createFakeDocument();
+  const spoken = [];
+  const frenchVoice = { lang: 'fr-FR', name: 'French (France)' };
+
+  global.document = document;
+  delete require.cache[require.resolve('../script.js')];
+  require('../script.js');
+  global.window = {
+    SpeechSynthesisUtterance: function SpeechSynthesisUtterance(text) {
+      this.text = text;
+    },
+    speechSynthesis: {
+      getVoices: () => [{ lang: 'en-US' }, frenchVoice],
+      cancel: () => {},
+      speak: (utterance) => spoken.push(utterance),
+    },
+  };
+
+  const speakerButton = { dataset: { speechText: 'je mangeais' } };
+  let prevented = false;
+  let stopped = false;
+  elements.studyConjugationCard.click({
+    target: { closest: () => speakerButton },
+    preventDefault: () => { prevented = true; },
+    stopPropagation: () => { stopped = true; },
+  });
+
+  assert.equal(spoken.length, 1);
+  assert.equal(spoken[0].text, 'je mangeais');
+  assert.equal(spoken[0].voice, frenchVoice);
+  assert.ok(prevented);
+  assert.ok(stopped);
+
+  global.document = originalDocument;
+  global.window = originalWindow;
+});
