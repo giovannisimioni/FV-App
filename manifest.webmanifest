@@ -1,0 +1,11 @@
+{
+  "name": "French Verbs",
+  "short_name": "French Verbs",
+  "description": "Esercitati con i tempi verbali francesi",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1F4B99",
+  "lang": "it-IT"
+}
